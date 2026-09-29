@@ -16,7 +16,7 @@ st.set_page_config(
 st.markdown("""
     <style>
     .room-card {
-        padding: 16px;
+        padding: 12px;
         border-radius: 12px;
         color: white;
         text-align: center;
@@ -25,17 +25,17 @@ st.markdown("""
         font-family: sans-serif;
     }
     .room-number {
-        font-size: 22px;
+        font-size: 20px;
         font-weight: bold;
-        margin-bottom: 4px;
+        margin-bottom: 2px;
     }
     .room-type {
         font-size: 13px;
         opacity: 0.9;
-        margin-bottom: 8px;
+        margin-bottom: 6px;
     }
     .room-status {
-        font-size: 14px;
+        font-size: 13px;
         font-weight: 600;
         background-color: rgba(255, 255, 255, 0.25);
         padding: 4px 8px;
@@ -51,18 +51,50 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ---------------------------------------------------------
-# 2. KHỞI TẠO DỮ LIỆU MẪU (SESSION STATE)
+# 2. KHỞI TẠO DỮ LIỆU MẪU CÓ CHÈN ẢNH (SESSION STATE)
 # ---------------------------------------------------------
 if "rooms" not in st.session_state:
     st.session_state.rooms = pd.DataFrame([
-        {"Phòng": "101", "Tầng": 1, "Loại phòng": "Standard", "Trạng thái": "Trống", "Giá (VNĐ)": 500000, "Ghi chú": "Sạch sẻ, sẵn sàng"},
-        {"Phòng": "102", "Tầng": 1, "Loại phòng": "Standard", "Trạng thái": "Đang ở", "Giá (VNĐ)": 500000, "Ghi chú": "Khách checkout 12h"},
-        {"Phòng": "103", "Tầng": 1, "Loại phòng": "Deluxe", "Trạng thái": "Đang dọn dẹp", "Giá (VNĐ)": 800000, "Ghi chú": "Đang thay ga giường"},
-        {"Phòng": "104", "Tầng": 1, "Loại phòng": "Deluxe", "Trạng thái": "Bảo trì", "Giá (VNĐ)": 800000, "Ghi chú": "Hỏng điều hòa"},
-        {"Phòng": "201", "Tầng": 2, "Loại phòng": "Standard", "Trạng thái": "Trống", "Giá (VNĐ)": 550000, "Ghi chú": ""},
-        {"Phòng": "202", "Tầng": 2, "Loại phòng": "VIP Suite", "Trạng thái": "Đang ở", "Giá (VNĐ)": 1500000, "Ghi chú": "VIP - Khách VIP"},
-        {"Phòng": "203", "Tầng": 2, "Loại phòng": "VIP Suite", "Trạng thái": "Trống", "Giá (VNĐ)": 1500000, "Ghi chú": ""},
-        {"Phòng": "204", "Tầng": 2, "Loại phòng": "Deluxe", "Trạng thái": "Đang dọn dẹp", "Giá (VNĐ)": 850000, "Ghi chú": ""},
+        {
+            "Phòng": "101", "Tầng": 1, "Loại phòng": "Standard", "Trạng thái": "Trống", 
+            "Giá (VNĐ)": 500000, "Ghi chú": "Sạch sẻ, sẵn sàng",
+            "Hình ảnh": "https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=500"
+        },
+        {
+            "Phòng": "102", "Tầng": 1, "Loại phòng": "Standard", "Trạng thái": "Đang ở", 
+            "Giá (VNĐ)": 500000, "Ghi chú": "Khách checkout 12h",
+            "Hình ảnh": "https://images.unsplash.com/photo-1590490360182-c33d57733427?w=500"
+        },
+        {
+            "Phòng": "103", "Tầng": 1, "Loại phòng": "Deluxe", "Trạng thái": "Đang dọn dẹp", 
+            "Giá (VNĐ)": 800000, "Ghi chú": "Đang thay ga giường",
+            "Hình ảnh": "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=500"
+        },
+        {
+            "Phòng": "104", "Tầng": 1, "Loại phòng": "Deluxe", "Trạng thái": "Bảo trì", 
+            "Giá (VNĐ)": 800000, "Ghi chú": "Hỏng điều hòa",
+            "Hình ảnh": "https://images.unsplash.com/photo-1566665797739-1674de7a421a?w=500"
+        },
+        {
+            "Phòng": "201", "Tầng": 2, "Loại phòng": "Standard", "Trạng thái": "Trống", 
+            "Giá (VNĐ)": 550000, "Ghi chú": "",
+            "Hình ảnh": "https://images.unsplash.com/photo-1591088398332-8a7791972843?w=500"
+        },
+        {
+            "Phòng": "202", "Tầng": 2, "Loại phòng": "VIP Suite", "Trạng thái": "Đang ở", 
+            "Giá (VNĐ)": 1500000, "Ghi chú": "VIP - Khách VIP",
+            "Hình ảnh": "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=500"
+        },
+        {
+            "Phòng": "203", "Tầng": 2, "Loại phòng": "VIP Suite", "Trạng thái": "Trống", 
+            "Giá (VNĐ)": 1500000, "Ghi chú": "",
+            "Hình ảnh": "https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=500"
+        },
+        {
+            "Phòng": "204", "Tầng": 2, "Loại phòng": "Deluxe", "Trạng thái": "Đang dọn dẹp", 
+            "Giá (VNĐ)": 850000, "Ghi chú": "",
+            "Hình ảnh": "https://images.unsplash.com/photo-1598928506311-c55ded91a20c?w=500"
+        },
     ])
 
 STATUS_COLORS = {
@@ -80,7 +112,7 @@ STATUS_CLASS = {
 }
 
 # ---------------------------------------------------------
-# 3. SIDEBAR: BỘ LỌC & CẬP NHẬT TRẠNG THÁI KHÓA/MỞ
+# 3. SIDEBAR: BỘ LỌC & CẬP NHẬT TRẠNG THÁI / ẢNH
 # ---------------------------------------------------------
 st.sidebar.title("🏨 Điều Khiển Hệ Thống")
 
@@ -100,20 +132,23 @@ selected_status = st.sidebar.multiselect(
 
 st.sidebar.divider()
 
-# Form Cập nhật nhanh trạng thái
-st.sidebar.subheader("⚡ Cập nhật nhanh trạng thái")
+# Form Cập nhật nhanh
+st.sidebar.subheader("⚡ Cập nhật nhanh thông tin")
 with st.sidebar.form("update_room_form"):
     room_to_update = st.selectbox("Chọn Phòng", options=st.session_state.rooms["Phòng"].tolist())
     new_status = st.selectbox("Trạng thái mới", options=list(STATUS_COLORS.keys()))
+    new_img = st.text_input("Link ảnh phòng (URL)", value="")
     new_note = st.text_input("Ghi chú bổ sung", value="")
     submit_update = st.form_submit_button("Cập Nhật Tình Trạng", use_container_width=True)
 
     if submit_update:
         idx = st.session_state.rooms[st.session_state.rooms["Phòng"] == room_to_update].index[0]
         st.session_state.rooms.at[idx, "Trạng thái"] = new_status
+        if new_img:
+            st.session_state.rooms.at[idx, "Hình ảnh"] = new_img
         if new_note:
             st.session_state.rooms.at[idx, "Ghi chú"] = new_note
-        st.sidebar.success(f"Đã cập nhật Phòng {room_to_update} -> {new_status}")
+        st.sidebar.success(f"Đã cập nhật Phòng {room_to_update} thành công!")
         st.rerun()
 
 # ---------------------------------------------------------
@@ -147,7 +182,7 @@ st.divider()
 # --- TABS GIAO DIỆN ---
 tab_sodo, tab_danhsach, tab_bieudo = st.tabs(["🗺️ Sơ Đồ Phòng Direct View", "📋 Danh Sách Chi Tiết", "📈 Biểu Đồ Báo Cáo"])
 
-# --- TAB 1: SƠ ĐỒ PHÒNG ---
+# --- TAB 1: SƠ ĐỒ PHÒNG HỖ TRỢ HIỂN THỊ ẢNH ---
 with tab_sodo:
     st.subheader("Sơ Đồ Trực Quan Theo Tầng")
     
@@ -167,6 +202,11 @@ with tab_sodo:
                 note_display = f"<br><i>Note: {room['Ghi chú']}</i>" if room['Ghi chú'] else ""
                 
                 with cols[col_idx]:
+                    # Hiển thị ảnh phòng
+                    if room.get("Hình ảnh"):
+                        st.image(room["Hình ảnh"], use_container_width=True)
+                    
+                    # Khối thông tin trạng thái phòng
                     st.markdown(f"""
                         <div class="room-card {status_cls}">
                             <div class="room-number">Phòng {room['Phòng']}</div>
@@ -176,14 +216,19 @@ with tab_sodo:
                         </div>
                     """, unsafe_allow_html=True)
 
-# --- TAB 2: DANH SÁCH CHI TIẾT & CHỈNH SỬA BẢNG ---
+# --- TAB 2: DANH SÁCH CHI TIẾT VÀ BẢNG ẢNH ---
 with tab_danhsach:
     st.subheader("Quản Lý & Chỉnh Sửa Trực Tiếp")
-    st.caption("Bạn có thể chỉnh sửa trực tiếp giá trị trên bảng bên dưới và nhấn **'Lưu Thay Đổi'**.")
+    st.caption("Bạn có thể chỉnh sửa trực tiếp giá trị/URL ảnh trên bảng bên dưới và nhấn **'Lưu Thay Đổi'**.")
     
     edited_df = st.data_editor(
         st.session_state.rooms,
         column_config={
+            "Hình ảnh": st.column_config.ImageColumn(
+                "Hình ảnh phòng",
+                help="Đường dẫn URL ảnh phòng",
+                width="medium"
+            ),
             "Trạng thái": st.column_config.SelectboxColumn(
                 "Trạng thái",
                 options=list(STATUS_COLORS.keys()),
@@ -211,7 +256,6 @@ with tab_bieudo:
     col_chart1, col_chart2 = st.columns(2)
     
     with col_chart1:
-        # Biểu đồ tròn thể hiện tỷ lệ trạng thái
         status_counts = st.session_state.rooms["Trạng thái"].value_counts().reset_index()
         status_counts.columns = ["Trạng thái", "Số lượng"]
         
@@ -227,7 +271,6 @@ with tab_bieudo:
         st.plotly_chart(fig_pie, use_container_width=True)
         
     with col_chart2:
-        # Biểu đồ cột phân bố trạng thái theo tầng
         floor_status = st.session_state.rooms.groupby(["Tầng", "Trạng thái"]).size().reset_index(name="Số lượng")
         fig_bar = px.bar(
             floor_status,
