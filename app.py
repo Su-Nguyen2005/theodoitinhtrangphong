@@ -282,3 +282,33 @@ with tab_bieudo:
             color_discrete_map=STATUS_COLORS
         )
         st.plotly_chart(fig_bar, use_container_width=True)
+import streamlit as st
+# (Nếu bạn dùng OpenAI hoặc Google Gemini API thì import thêm thư viện tương ứng ở đây)
+
+# --- KHU VỰC TRỢ LÝ AI CHATBOT ---
+st.divider() # Tạo đường kẻ phân cách
+st.subheader("💬 Trợ Lý AI Khách Sạn")
+
+# Khởi tạo lịch sử chat trong session_state
+if "messages" not in st.session_state:
+    st.session_state.messages = [
+        {"role": "assistant", "content": "Xin chào! Tôi có thể giúp gì cho bạn về thông tin phòng và trạng thái đặt phòng?"}
+    ]
+
+# Hiển thị các tin nhắn cũ
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
+
+# Ô nhập câu hỏi của người dùng
+if prompt := st.chat_input("Hỏi AI về trạng thái phòng..."):
+    # Hiển thị tin nhắn người dùng vừa gõ
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    with st.chat_message("user"):
+        st.markdown(prompt)
+
+    # Xử lý phản hồi từ AI (Ví dụ xử lý logic cơ bản hoặc gọi API)
+    with st.chat_message("assistant"):
+        response = f"Tôi đã nhận câu hỏi: '{prompt}'. Dữ liệu phòng đang được kết nối trực tiếp với MySQL!"
+        st.markdown(response)
+        st.session_state.messages.append({"role": "assistant", "content": response})
