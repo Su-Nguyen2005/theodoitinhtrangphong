@@ -325,6 +325,7 @@ if prompt := st.chat_input("Hỏi AI về trạng thái phòng..."):
     # Xử lý trả lời từ dữ liệu MySQL thực tế
     with st.chat_message("assistant"):
         prompt_lower = prompt.lower()
+        conn = st.connection("mysql", type="sql")
         
         # Xử lý câu hỏi về tổng số phòng
         if "bao nhiêu phòng" in prompt_lower or "tổng" in prompt_lower:
