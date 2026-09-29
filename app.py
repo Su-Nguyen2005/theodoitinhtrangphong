@@ -301,14 +301,51 @@ for message in st.session_state.messages:
         st.markdown(message["content"])
 
 # Ô nhập câu hỏi của người dùng
+# --- KHU VỰC TRỢ LÝ AI CHATBOT ---
+st.divider()
+st.subheader("💬 Trợ Lý AI Khách Sạn")
+
+# Khởi tạo lịch sử chat
+if "messages" not in st.session_state:
+    st.session_state.messages = [
+        {"role": "assistant", "content": "Xin chào! Tôi có thể giúp gì cho bạn về thông tin phòng và trạng thái đặt phòng?"}
+    ]
+
+# Hiển thị lịch sử chat
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
+
+# Ô nhập câu hỏi của người dùng
 if prompt := st.chat_input("Hỏi AI về trạng thái phòng..."):
-    # Hiển thị tin nhắn người dùng vừa gõ
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
 
-    # Xử lý phản hồi từ AI (Ví dụ xử lý logic cơ bản hoặc gọi API)
+    # Xử lý trả lời từ dữ liệu MySQL thực tế
     with st.chat_message("assistant"):
-        response = f"Tôi đã nhận câu hỏi: '{prompt}'. Dữ liệu phòng đang được kết nối trực tiếp với MySQL!"
+        prompt_lower = prompt.lower()
+        
+        # Xử lý câu hỏi về tổng số phòng
+        if "bao nhiêu phòng" in prompt_lower or "tổng" in prompt_lower:
+            df_rooms = conn.query("SELECT COUNT(*) as total FROM rooms;", ttl=0)
+            total = df_rooms['total'].iloc[0]
+            response = f"Hiện tại hệ thống đang quản lý tổng cộng **{total} phòng**."
+            
+        # Xử lý câu hỏi tìm phòng trống
+        elif "trống" in prompt_lower:
+            df_empty = conn.query("SELECT room_number FROM rooms WHERE status = 'Trống';", ttl=0)
+            rooms_list = ", ".join(map(str, df_empty['room_number'].tolist()))
+            response = f"Các phòng đang **Trống**: {rooms_list if rooms_list else 'Hiện không có phòng trống.'}"
+            
+        # Xử lý câu hỏi tìm phòng đang ở
+        elif "đang ở" in prompt_lower:
+            df_busy = conn.query("SELECT room_number FROM rooms WHERE status = 'Đang ở';", ttl=0)
+            rooms_list = ", ".join(map(str, df_busy['room_number'].tolist()))
+            response = f"Các phòng **Đang ở**: {rooms_list if rooms_list else 'Không có phòng nào đang ở.'}"
+            
+        else:
+            response = "Tôi có thể hỗ trợ bạn kiểm tra: tổng số phòng, danh sách phòng trống, hoặc danh sách phòng đang ở. Bạn muốn kiểm tra thông tin nào?"
+
         st.markdown(response)
         st.session_state.messages.append({"role": "assistant", "content": response})
